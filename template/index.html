@@ -1,0 +1,29 @@
+# templates/index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Task Manager</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .task { border: 1px solid #ddd; margin: 10px 0; padding: 10px; }
+        form { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>Task Manager</h1>
+    
+    <form action="/add_task" method="post">
+        <input type="text" name="title" placeholder="Enter task" required>
+        <button type="submit">Add Task</button>
+    </form>
+
+    <div id="tasks">
+        {% for task in tasks %}
+        <div class="task">
+            <h3>{{ task.title }}</h3>
+            <p>Created: {{ task.created_at }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
