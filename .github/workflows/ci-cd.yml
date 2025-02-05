@@ -9,9 +9,14 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
     
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -28,18 +33,17 @@ jobs:
       run: |
         black .
         
-    - name: Commit changes
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add .
-        git diff --quiet && git diff --staged --quiet || git commit -m "style: auto-format code with Black"
-        
-    - name: Push changes
-      uses: ad-m/github-push-action@master
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.ref }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "style: auto-format code with Black"
+        title: "style: format code with Black"
+        body: |
+          Auto-formatted code using Black
+          - Formatted Python files according to Black coding style
+        branch: code-formatting
+        base: ${{ github.head_ref || github.ref_name }}
     
     - name: Run tests
       run: |
